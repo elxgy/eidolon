@@ -42,8 +42,7 @@ func TestWALAppendAndRecover(t *testing.T) {
 	}
 
 	for _, r := range records {
-		err := wal.Append(r.Key, r.Value)
-		if err != nil {
+		if err := wal.Append(r.Key, r.Value); err != nil {
 			t.Fatalf("Append failed: %v", err)
 		}
 	}

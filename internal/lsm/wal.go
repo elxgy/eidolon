@@ -53,10 +53,9 @@ func (w *WAL) Recover() ([]LogRecord, error) {
 	var lastOffset int64
 
 	for {
-		var keyLen uint32
 
-		err := binary.Read(w.file, binary.LittleEndian, &keyLen)
-		if err != nil {
+		var keyLen uint32
+		if err := binary.Read(w.file, binary.LittleEndian, &keyLen); err != nil {
 			if err == io.EOF {
 				break
 			}
@@ -64,20 +63,17 @@ func (w *WAL) Recover() ([]LogRecord, error) {
 		}
 
 		key := make([]byte, keyLen)
-		_, err = io.ReadFull(w.file, key)
-		if err != nil {
+		if _, err := io.ReadFull(w.file, key); err != nil {
 			break
 		}
 
 		var valLen uint32
-		err = binary.Read(w.file, binary.LittleEndian, &valLen)
-		if err != nil {
+		if err := binary.Read(w.file, binary.LittleEndian, &valLen); err != nil {
 			break
 		}
 
 		value := make([]byte, valLen)
-		_, err = io.ReadFull(w.file, value)
-		if err != nil {
+		if _, err := io.ReadFull(w.file, value); err != nil {
 			break
 		}
 
@@ -91,8 +87,7 @@ func (w *WAL) Recover() ([]LogRecord, error) {
 		lastOffset = pos
 	}
 
-	err = w.file.Truncate(lastOffset)
-	if err != nil {
+	if err := w.file.Truncate(lastOffset); err != nil {
 		return nil, err
 	}
 
